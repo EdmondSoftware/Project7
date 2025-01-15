@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from database import engine
 from models import Base
 import psycopg2
+from fastapi.responses import FileResponse
+
 "Daniel mihatel register gri"
 conn = psycopg2.connect(
     user = "postgres",
@@ -25,3 +27,7 @@ def get_all_users():
     cursor.execute("""SELECT * from users""")
     users = cursor.fetchall()
     return users
+
+@app.get("/photo")
+def get_photo():
+    return FileResponse("photo.html")
