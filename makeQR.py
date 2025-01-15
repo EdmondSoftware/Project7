@@ -1,7 +1,7 @@
 import qrcode
 
 # Data to encode in the QR code
-data = "http://127.0.0.1:8000/photo"
+data = "http://54.235.26.36/photo"
 
 # Create a QR code object with specific settings
 qr = qrcode.QRCode(
