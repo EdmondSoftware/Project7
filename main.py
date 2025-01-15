@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from database import engine
 from models import Base
 import psycopg2
-
+"Daniel mihatel register gri"
 conn = psycopg2.connect(
     user = "postgres",
     host = "localhost",
