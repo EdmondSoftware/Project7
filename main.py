@@ -1,43 +1,44 @@
 from fastapi import FastAPI
-from database import engine
-from models import Base, User
+import uvicorn
+from psycopg2.extras import RealDictCursor
+import time
 import psycopg2
-from fastapi.responses import FileResponse
+
+from models import Base
+from database import engine
+from models import User
+from auth import auth_router
+from auth_schemas import UserSignUpSchema, UserLoginSchema
 
 
+Base.metadata.create_all(bind=engine)
 
-conn = psycopg2.connect(
-    user = "postgres",
-    host = "localhost",
-    password = "password",
-    database = "test"
-    )
+while True:
+    try:
+        conn = psycopg2.connect(
+            host='localhost',
+            user='postgres',
+            database='test',
+            password='password',
+            cursor_factory=RealDictCursor
+        )
 
-cursor = conn.cursor()
-
-Base.metadata.create_all(engine)
+        cursor = conn.cursor()
+        break
+    except Exception as err:
+        print(err)
+        time.sleep(3)
 
 app = FastAPI()
 
-@app.get('/')
+
+@app.get("/")
 def main():
-    return "Ok"
-
-@app.get("/users")
-def get_all_users():
-    cursor.execute("""SELECT * from users""")
-    users = cursor.fetchall()
-    return users
-
-@app.get("/photo")
-def get_photo():
-    return FileResponse("photo.html")
-
-@app.post("/signup")
-def signup(User):
-    cursor.execute("""""")
+    return
 
 
-@app.post("/login")
-def login():
-    pass
+app.include_router(auth_router)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host='localhost', port=8000)
