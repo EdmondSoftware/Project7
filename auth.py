@@ -63,10 +63,11 @@ auth_router = APIRouter(tags=['Auth'])
 
 @auth_router.post("/sign_up")
 def sign_app_user(data: UserSignUpSchema):
+    hashed_password = hash_password(data.password)
     dbconn = DbConn()
 
     dbconn.cursor.execute("""INSERT INTO users (name, email, password) VALUES (%s, %s, %s)""",
-                          (data.name, data.email, data.password))
+                          (data.name, data.email, hashed_password))
 
     dbconn.conn.commit()
 
