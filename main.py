@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from database import engine
-from models import Base
+from models import Base, User
 import psycopg2
 from fastapi.responses import FileResponse
+
 
 
 conn = psycopg2.connect(
@@ -31,3 +32,12 @@ def get_all_users():
 @app.get("/photo")
 def get_photo():
     return FileResponse("photo.html")
+
+@app.post("/signup")
+def signup(User):
+    cursor.execute("""""")
+
+
+@app.post("/login")
+def login():
+    pass
