@@ -9,11 +9,55 @@ from jose import jwt, JWTError
 from fastapi.security.oauth2 import OAuth2PasswordBearer
 from security import hash_password, verify_password
 
+
 oauth2_schema = OAuth2PasswordBearer(tokenUrl='/login')
 
 SECRET_KEY = "secret"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
+
+
+def get_current_user(token: str = Depends(oauth2_schema)):
+    try:
+        current_user = verify_token(token)
+        return current_user
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="In UserApp/services/auth.py function get_current_user()\n"
+                                   "Error occurred while trying to get current user\n"
+                                   f"ERR: {err}")
+
+
+def create_token(user_data: dict):
+    token_exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload = {
+        "exp": token_exp,
+        "user": user_data
+    }
+
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    return token
+
+
+def verify_token(token):
+    exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Couldn't validate credentials",
+        headers={
+            "WWW-Authenticated": 'Bearer'
+        }
+    )
+
+    try:
+        payload = jwt.decode(token, "secret", algorithms=["HS256"])
+    except JWTError:
+        raise exception
+
+    user_data = payload.get('user')
+
+    return user_data
+
 
 auth_router = APIRouter(tags=['Auth'])
 
